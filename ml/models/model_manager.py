@@ -7,6 +7,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Dict, Any
 from ml.utils.config import SAVED_MODELS_DIR, MODEL_REGISTRY_PATH
+from ml.utils.logging_setup import get_ml_logger
+
+logger = get_ml_logger("spamshield.ml.models")
 
 
 def _load_registry() -> list:
@@ -58,6 +61,7 @@ def save_model_version(
     with open(latest_path, "w") as f:
         json.dump(entry, f, indent=2)
 
+    logger.info("Saved model version %s (algorithm=%s, f1=%.4f)", version_id, algorithm, metrics.get("f1_score", 0))
     return version_id
 
 
@@ -77,9 +81,11 @@ def load_latest_model():
     """Load the latest model and vectorizer."""
     info = get_latest_version()
     if info is None:
+        logger.warning("Attempted to load model but no trained model exists")
         raise FileNotFoundError("No trained model found. Please train a model first.")
     model = joblib.load(info["model_path"])
     vectorizer = joblib.load(info["vectorizer_path"])
+    logger.info("Loaded model %s (%s) from disk", info.get("version"), info.get("algorithm"))
     return model, vectorizer, info
 
 

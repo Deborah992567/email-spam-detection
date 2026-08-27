@@ -1,12 +1,18 @@
 """
 CLI entry point for the ML module.
+Logs are written to rotating files under the logs/ folder.
 """
 import argparse
 import json
 import sys
 import os
+import logging
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from ml.utils.logging_setup import get_ml_logger  # noqa: E402
+
+logger = get_ml_logger("spamshield.ml.cli")
 
 
 def cmd_train(args):
@@ -18,7 +24,9 @@ def cmd_train(args):
     print(f"Dataset loaded: {stats['total']} samples ({stats['spam']} spam, {stats['ham']} ham)")
 
     print("Training models...")
+    logger.info("CLI training started from dataset %s", args.dataset)
     results = train_models(df)
+    logger.info("CLI training finished: best=%s version=%s", results["best_model"], results["best_version"])
 
     print(f"\nBest model: {results['best_model']} ({results['best_version']})")
     print(f"Total samples: {results['total_samples']}")
@@ -42,6 +50,7 @@ def cmd_predict(args):
         subject=args.subject or "",
         body=args.body or "",
     )
+    logger.info("CLI prediction -> %s @ %.1f%%", result["prediction"], result["confidence"])
 
     print(f"\nPrediction:  {result['prediction'].upper()}")
     print(f"Confidence:  {result['confidence']}%")

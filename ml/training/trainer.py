@@ -21,18 +21,27 @@ from ml.utils.config import (
     TFIDF_MAX_FEATURES, TFIDF_NGRAM_RANGE, TFIDF_MIN_DF,
     TFIDF_MAX_DF, TEST_SIZE, RANDOM_STATE
 )
+from ml.utils.logging_setup import get_ml_logger
+
+logger = get_ml_logger()
 
 
 def train_models(df: pd.DataFrame) -> Dict[str, Any]:
     """Train multiple models and return results."""
     if df.empty:
+        logger.error("Training attempted with an empty dataset")
         raise ValueError("Training dataset is empty")
 
     texts = df["message"].tolist()
     labels = df["label"].map({"spam": 1, "ham": 0}).values
 
     if len(set(labels)) < 2:
+        logger.error("Training dataset must contain both spam and ham samples")
         raise ValueError("Training dataset must contain both spam and ham samples")
+
+    n_spam = int(labels.sum())
+    n_ham = int(len(labels) - n_spam)
+    logger.info("Starting training with %d samples (spam=%d, ham=%d)", len(df), n_spam, n_ham)
 
     cleaned = clean_texts(texts)
 
@@ -51,6 +60,7 @@ def train_models(df: pd.DataFrame) -> Dict[str, Any]:
 
     X_train_vec = vectorizer.fit_transform(X_train)
     X_test_vec = vectorizer.transform(X_test)
+    logger.info("TF-IDF vectorization complete (train=%d, test=%d)", X_train_vec.shape[0], X_test_vec.shape[0])
 
     models = {
         "MultinomialNB": MultinomialNB(alpha=1.0),
@@ -76,6 +86,10 @@ def train_models(df: pd.DataFrame) -> Dict[str, Any]:
         metrics = evaluate_model(y_test, y_pred, y_proba)
         results[name] = metrics
         metrics["model"] = model
+        logger.info(
+            "Model %s -> accuracy=%.4f precision=%.4f recall=%.4f f1=%.4f",
+            name, metrics["accuracy"], metrics["precision"], metrics["recall"], metrics["f1_score"],
+        )
 
         if metrics["f1_score"] > best_f1:
             best_f1 = metrics["f1_score"]
@@ -90,6 +104,7 @@ def train_models(df: pd.DataFrame) -> Dict[str, Any]:
         vectorizer=vectorizer,
         metrics=best_metrics,
     )
+    logger.info("Best model '%s' saved as version %s (F1=%.4f)", best_name, version_id, best_f1)
 
     return {
         "best_model": best_name,

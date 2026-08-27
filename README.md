@@ -451,6 +451,23 @@ python -m pytest tests/ -v
 - Dataset loader validation tests
 - Model manager registry tests
 
+## Logging
+
+Application and ML activity are written to rotating log files in the `logs/` folder (not just the terminal), so all activity is persisted for review.
+
+| File          | Contents                                                        |
+|---------------|-----------------------------------------------------------------|
+| `logs/app.log`    | Backend runtime log (requests, training, DB init, errors)   |
+| `logs/error.log`  | Errors and warnings only                                    |
+| `logs/access.log` | HTTP request access log for the FastAPI backend             |
+| `logs/ml.log`     | ML pipeline activity (training, prediction, evaluation)     |
+
+Each file rotates at 5 MB and keeps up to 5 backups. Log files are git-ignored (`.log`); the folder itself is tracked via `logs/README.md` and `.gitkeep`.
+
+Configuration lives in:
+- `backend/app/core/logging_config.py` — backend + HTTP access logging
+- `ml/utils/logging_setup.py` — ML pipeline logging
+
 ## Default Accounts
 
 | Role  | Email                    | Password  |

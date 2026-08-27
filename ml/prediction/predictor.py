@@ -6,9 +6,10 @@ import logging
 from ml.models.model_manager import load_latest_model, get_latest_version
 from ml.preprocessing.text_cleaner import clean_text
 from ml.prediction.explainer import generate_explanation
+from ml.utils.logging_setup import get_ml_logger
 import numpy as np
 
-logger = logging.getLogger(__name__)
+logger = get_ml_logger("spamshield.ml.predict")
 
 _model_cache = {"model": None, "vectorizer": None, "info": None}
 
@@ -21,6 +22,7 @@ def _get_model():
 
 def reload_model():
     """Force reload of model from disk."""
+    logger.info("Reloading model cache")
     _model_cache["model"] = None
     _model_cache["vectorizer"] = None
     _model_cache["info"] = None
@@ -38,6 +40,7 @@ def predict_email(
         try:
             model, vectorizer, version_info = _get_model()
         except FileNotFoundError:
+            logger.warning("Prediction requested but no trained model is available")
             return {
                 "prediction": "ham",
                 "confidence": 0.0,
@@ -75,6 +78,11 @@ def predict_email(
 
     raw_text = f"{subject} {body}"
     indicators = generate_explanation(raw_text, label, confidence)
+
+    logger.info(
+        "Prediction -> sender=%s subject=%r result=%s confidence=%.1f%% model=%s",
+        sender, subject, label, confidence * 100, version_info.get("version", "unknown"),
+    )
 
     return {
         "prediction": label,
