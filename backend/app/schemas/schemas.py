@@ -114,6 +114,7 @@ class DashboardStats(BaseModel):
     spam_percentage: float
     recent_analyses: List[Dict[str, Any]]
     daily_stats: List[Dict[str, Any]]
+    risk_distribution: Dict[str, int] = Field(default_factory=dict)
 
 
 class AdminStats(BaseModel):

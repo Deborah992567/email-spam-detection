@@ -75,6 +75,12 @@ def get_dashboard_stats(
         resp.indicators = json.loads(a.indicators) if a.indicators else None
         recent_items.append(resp.model_dump())
 
+    risk_counts = {
+        "high": user_analyses.filter(EmailAnalysis.risk_level == "high").count(),
+        "medium": user_analyses.filter(EmailAnalysis.risk_level == "medium").count(),
+        "low": user_analyses.filter(EmailAnalysis.risk_level == "low").count(),
+    }
+
     daily = []
     for i in range(6, -1, -1):
         day = datetime.now(timezone.utc).date() - timedelta(days=i)
@@ -103,4 +109,5 @@ def get_dashboard_stats(
         spam_percentage=spam_pct,
         recent_analyses=recent_items,
         daily_stats=daily,
+        risk_distribution=risk_counts,
     )
