@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext';
 import { ShieldIcon, MailIcon, AlertTriangleIcon, CheckCircleIcon, ChevronRightIcon } from '../components/Icons';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area } from 'recharts';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { StatsSkeleton, ChartSkeleton, TableSkeleton } from '../components/Skeleton';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState(null);
@@ -26,7 +27,20 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) return <div className="page-loading"><div className="spinner" /></div>;
+  if (loading) {
+    return (
+      <div className="page">
+        <div className="page-header"><h1>Dashboard</h1></div>
+        <StatsSkeleton />
+        <div className="charts-grid">
+          <ChartSkeleton />
+          <ChartSkeleton />
+        </div>
+        <ChartSkeleton />
+        <TableSkeleton rows={4} />
+      </div>
+    );
+  }
   if (!stats) return <div className="empty-state"><p>Failed to load dashboard.</p></div>;
 
   const pieData = [
