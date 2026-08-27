@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext';
 import { UsersIcon, MailIcon, AlertTriangleIcon, CheckCircleIcon, DatabaseIcon, BrainIcon } from '../components/Icons';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { StatsSkeleton, ChartSkeleton } from '../components/Skeleton';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -26,7 +27,15 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading) return <div className="page-loading"><div className="spinner" /></div>;
+  if (loading) {
+    return (
+      <div className="page">
+        <div className="page-header"><h1>Admin Dashboard</h1></div>
+        <StatsSkeleton count={6} />
+        <div className="charts-grid"><ChartSkeleton /></div>
+      </div>
+    );
+  }
   if (!stats) return <div className="empty-state"><p>Failed to load stats.</p></div>;
 
   const pieData = [

@@ -4,6 +4,7 @@ import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { SearchIcon, FilterIcon, TrashIcon, ChevronRightIcon, MailIcon } from '../components/Icons';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { TableSkeleton } from '../components/Skeleton';
 
 export default function HistoryPage() {
   const [analyses, setAnalyses] = useState([]);
@@ -78,7 +79,7 @@ export default function HistoryPage() {
         </div>
 
         {loading ? (
-          <div className="page-loading"><div className="spinner" /></div>
+          <TableSkeleton rows={6} />
         ) : analyses.length > 0 ? (
           <>
             <div className="table-responsive">
