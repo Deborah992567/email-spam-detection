@@ -3,11 +3,14 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { ArrowLeftIcon, AlertTriangleIcon, CheckCircleIcon } from '../components/Icons';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function AnalysisDetailPage() {
   const { id } = useParams();
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useDocumentTitle('Analysis Detail');
   const { addToast } = useToast();
 
   useEffect(() => {

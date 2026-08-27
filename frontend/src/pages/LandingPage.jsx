@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldIcon, MailIcon, BrainIcon, BarChartIcon, CheckCircleIcon } from '../components/Icons';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function LandingPage() {
+  useDocumentTitle('');
+
   return (
     <div className="landing">
       <nav className="landing-nav">

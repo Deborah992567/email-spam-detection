@@ -3,11 +3,14 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { UserIcon } from '../components/Icons';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function ProfilePage() {
   const { user, updateUser } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+
+  useDocumentTitle('Profile');
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
 
