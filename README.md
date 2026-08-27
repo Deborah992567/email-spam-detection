@@ -13,6 +13,8 @@ An AI-powered web application that analyzes emails to detect spam using machine 
 - **JWT Authentication**: Secure login with role-based access control (User / Admin)
 - **Responsive UI**: Works on desktop, tablet, and mobile with dark cybersecurity theme
 - **Dataset Management**: Upload CSV, add/delete training samples, label as spam/ham
+- **Dataset Tooling**: CSV template download, full dataset export, source tagging (sample vs. dataset)
+- **Auto-Seed & Train**: When no training data exists, seed clearly-labeled sample data and train a working model with one click
 - **Model Versioning**: Track model versions, compare algorithms, view evaluation metrics
 - **Role-Based Access**: Normal users cannot access admin endpoints
 
@@ -213,6 +215,7 @@ For each prediction, the system checks for:
 | id         | INT (PK) | Auto-increment ID               |
 | message    | TEXT     | Email text content              |
 | label      | VARCHAR  | "spam" or "ham"                 |
+| source     | VARCHAR  | "sample" (built-in/dev) or "dataset" (uploaded) |
 | created_at | DATETIME | Sample creation timestamp       |
 
 ### Model Versions Table
@@ -283,9 +286,11 @@ python main.py train /path/to/dataset.csv
 
 1. Start the backend server
 2. Login as admin
-3. Upload training samples via Dataset Management (or seed data)
+3. Upload training samples via Dataset Management, OR if you have no dataset yet, click **"Seed Sample Data"** (loads clearly-labeled development samples) or **"Seed Sample Data & Train"** on the Model Performance page
 4. Navigate to Model Performance
 5. Click "Train/Retrain Model"
+
+> **Note on sample data:** The built-in sample emails are clearly labeled as development data for demonstration/testing only. For production use, upload a real labeled dataset (via Dataset Management > Upload CSV, using the downloadable template format).
 
 ### 4. Evaluate the Model
 
@@ -293,6 +298,12 @@ python main.py train /path/to/dataset.csv
 cd backend
 python -m scripts.evaluate_model /path/to/dataset.csv
 ```
+
+### Dataset Tools (Admin)
+
+- **Download Template** — get a `template.csv` showing the expected `label,message` format
+- **Export Dataset** — download all training samples as `training_dataset.csv`
+- **Source Tagging** — each sample is tagged `sample` (built-in/dev) or `dataset` (uploaded) so you can tell them apart
 
 ### Dataset Format
 
@@ -405,6 +416,8 @@ Once the backend is running:
 |--------|---------------------------|-------------------------|-------|
 | GET    | `/api/dataset/`           | List training samples   | Admin |
 | GET    | `/api/dataset/stats`      | Dataset statistics      | Admin |
+| GET    | `/api/dataset/template`   | Download CSV template   | Admin |
+| GET    | `/api/dataset/export`     | Export all samples as CSV | Admin |
 | POST   | `/api/dataset/`           | Add training sample     | Admin |
 | POST   | `/api/dataset/upload`     | Upload CSV dataset      | Admin |
 | POST   | `/api/dataset/bulk`       | Bulk add samples        | Admin |
@@ -416,7 +429,10 @@ Once the backend is running:
 |--------|---------------------------|-------------------------|-------|
 | GET    | `/api/model/versions`     | List model versions     | Admin |
 | GET    | `/api/model/current`      | Current model info      | Admin |
+| GET    | `/api/model/dataset-status`| Dataset trainability   | Admin |
 | POST   | `/api/model/train`        | Train/retrain model     | Admin |
+| POST   | `/api/model/seed-sample-data` | Load built-in sample dataset | Admin |
+| POST   | `/api/model/seed-and-train`  | Seed sample data & train | Admin |
 
 ## Testing
 
