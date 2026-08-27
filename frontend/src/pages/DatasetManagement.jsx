@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { SearchIcon, TrashIcon, UploadIcon, DatabaseIcon, PlusIcon } from '../components/Icons';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function DatasetManagement() {
   const [samples, setSamples] = useState([]);
   const [total, setTotal] = useState(0);
+
+  useDocumentTitle('Dataset Management');
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [search, setSearch] = useState('');
@@ -16,6 +19,7 @@ export default function DatasetManagement() {
   const [newLabel, setNewLabel] = useState('ham');
   const [uploading, setUploading] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const fileRef = useRef();
   const { addToast } = useToast();
 
@@ -95,9 +99,29 @@ export default function DatasetManagement() {
     }
   };
 
+  const handleSeed = async () => {
+    if (!confirm('Load the built-in SAMPLE dataset for development? These are clearly-labeled sample emails (not production data).')) return;
+    setSeeding(true);
+    try {
+      const res = await api.post('/api/model/seed-sample-data');
+      addToast(`Seeded ${res.data.seeded} sample emails`, 'success');
+      fetchSamples();
+      fetchStats();
+    } catch (err) {
+      addToast(err.response?.data?.detail || 'Seeding failed', 'error');
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   return (
     <div className="page">
-      <div className="page-header"><h1>Dataset Management</h1></div>
+      <div className="page-header">
+        <h1>Dataset Management</h1>
+        <button className="btn btn-outline" onClick={handleSeed} disabled={seeding}>
+          {seeding ? <><div className="spinner-sm" /> Seeding...</> : <><DatabaseIcon size={18} /> Seed Sample Data</>}
+        </button>
+      </div>
 
       {stats && (
         <div className="stats-grid stats-grid-3">

@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { SearchIcon, TrashIcon, UsersIcon } from '../components/Icons';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
+
+  useDocumentTitle('User Management');
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [search, setSearch] = useState('');
