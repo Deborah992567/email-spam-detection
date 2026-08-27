@@ -10,29 +10,26 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  useEffect(() => { fetchStats(); }, []);
 
   const fetchStats = async () => {
     try {
       const res = await api.get('/api/dashboard/');
       setStats(res.data);
     } catch (err) {
-      addToast('Failed to load dashboard', 'error');
+      addToast('Failed to load dashboard data', 'error');
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) return <div className="page-loading"><div className="spinner" /></div>;
-  if (!stats) return <div className="empty-state"><p>Failed to load dashboard data.</p></div>;
+  if (!stats) return <div className="empty-state"><p>Failed to load dashboard.</p></div>;
 
   const pieData = [
     { name: 'Spam', value: stats.spam_count || 0 },
     { name: 'Ham', value: stats.ham_count || 0 },
   ];
-
   const COLORS = ['#ef4444', '#22c55e'];
 
   return (
