@@ -3,6 +3,7 @@ import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { SearchIcon, TrashIcon, UsersIcon } from '../components/Icons';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { Skeleton } from '../components/Skeleton';
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -61,7 +62,14 @@ export default function UserManagement() {
             <button type="submit" className="btn btn-sm btn-primary">Search</button>
           </form>
         </div>
-        {loading ? <div className="page-loading"><div className="spinner" /></div> : users.length > 0 ? (
+        {loading ? (
+          <div style={{ padding: '4px 0' }}>
+            <Skeleton height={40} style={{ marginBottom: 12, borderRadius: 8 }} />
+            <Skeleton height={40} style={{ marginBottom: 12, borderRadius: 8 }} />
+            <Skeleton height={40} style={{ marginBottom: 12, borderRadius: 8 }} />
+            <Skeleton height={40} style={{ borderRadius: 8 }} />
+          </div>
+        ) : users.length > 0 ? (
           <div className="table-responsive">
             <table className="table">
               <thead>
