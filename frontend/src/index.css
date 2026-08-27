@@ -94,6 +94,7 @@ a:hover { text-decoration: underline; }
 .auth-header p { color: var(--text-secondary); font-size: 14px; }
 .auth-logo { color: var(--color-primary); }
 .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary); }
+.auth-demo-info { text-align: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color); }
 
 /* Sidebar */
 .app-layout { display: flex; min-height: 100vh; }
