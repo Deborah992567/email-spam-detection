@@ -1,8 +1,10 @@
 """
-Dataset management router for administrators.
+Dataset management router - Upload, add, and manage training samples.
+Requires admin role for all endpoints.
 """
 import io
 import csv
+import logging
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from sqlalchemy.orm import Session
 from typing import Optional
@@ -13,6 +15,7 @@ from backend.app.schemas.schemas import (
 )
 from backend.app.auth.auth import require_admin
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/dataset", tags=["Dataset"])
 
 
