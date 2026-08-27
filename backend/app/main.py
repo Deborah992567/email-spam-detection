@@ -1,8 +1,10 @@
 """
-Email Spam Detection System - FastAPI Application
+SpamShield - Email Spam Detection System
+FastAPI Application
 """
 import sys
 import os
+import logging
 from pathlib import Path
 
 # Add project root to path for ML imports
@@ -17,13 +19,18 @@ from backend.app.core.config import settings
 from backend.app.database.connection import engine, Base
 from backend.app.routers import auth, users, analysis, history, admin, dataset, model, dashboard
 
-# Create tables
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Create database tables
+logger.info("Creating database tables...")
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title=settings.APP_NAME,
+    title="SpamShield API",
     version=settings.APP_VERSION,
-    description="AI-powered email spam detection system with ML classification.",
+    description="AI-powered email spam detection system with ML classification, "
+                "explainable results, and admin dataset management.",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -37,7 +44,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
+# Routers
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(analysis.router)
@@ -50,21 +57,23 @@ app.include_router(model.router)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled exception: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,
         content={"detail": "Internal server error"},
     )
 
 
-@app.get("/")
+@app.get("/", tags=["Root"])
 def root():
     return {
-        "name": settings.APP_NAME,
+        "name": "SpamShield API",
         "version": settings.APP_VERSION,
         "docs": "/docs",
+        "description": "AI-powered email spam detection system",
     }
 
 
-@app.get("/api/health")
+@app.get("/api/health", tags=["Health"])
 def health():
-    return {"status": "healthy"}
+    return {"status": "healthy", "version": settings.APP_VERSION}
