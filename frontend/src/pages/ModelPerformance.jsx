@@ -3,6 +3,7 @@ import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { BrainIcon, PlayIcon, CheckCircleIcon, DatabaseIcon } from '../components/Icons';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { StatsSkeleton, Skeleton } from '../components/Skeleton';
 
 export default function ModelPerformance() {
   const [versions, setVersions] = useState([]);
@@ -72,7 +73,17 @@ export default function ModelPerformance() {
     }
   };
 
-  if (loading) return <div className="page-loading"><div className="spinner" /></div>;
+  if (loading) {
+    return (
+      <div className="page">
+        <div className="page-header"><h1>Model Performance</h1></div>
+        <StatsSkeleton count={2} />
+        <div style={{ marginTop: 20 }}>
+          <Skeleton height={220} style={{ borderRadius: 12 }} />
+        </div>
+      </div>
+    );
+  }
 
   const canTrain = dataset && dataset.enough_to_train;
 
