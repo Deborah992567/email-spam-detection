@@ -4,10 +4,11 @@ Core configuration using pydantic-settings.
 from pydantic_settings import BaseSettings
 from typing import List
 import json
+import os
 
 
 class Settings(BaseSettings):
-    APP_NAME: str = "Email Spam Detection System"
+    APP_NAME: str = "SpamShield"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
     HOST: str = "0.0.0.0"
@@ -19,11 +20,13 @@ class Settings(BaseSettings):
     DB_PASSWORD: str = ""
     DB_NAME: str = "spam_detection"
 
-    JWT_SECRET_KEY: str = "change-this-in-production"
+    JWT_SECRET_KEY: str = "change-this-in-production-use-a-real-secret"
     JWT_ALGORITHM: str = "HS256"
-    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     CORS_ORIGINS: str = '["http://localhost:3000","http://localhost:5173"]'
+
+    MAX_EMAIL_LENGTH: int = 50000
 
     @property
     def cors_origins_list(self) -> List[str]:
