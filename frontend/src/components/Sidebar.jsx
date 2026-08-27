@@ -65,8 +65,11 @@ export default function Sidebar() {
 
         <div className="sidebar-footer">
           <NavLink to="/profile" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`} onClick={() => setOpen(false)}>
-            <UserIcon size={20} />
-            <span>{user?.name || 'Profile'}</span>
+            <span className="sidebar-avatar">{user?.name?.charAt(0)?.toUpperCase() || 'U'}</span>
+            <span className="sidebar-user-info">
+              <span className="sidebar-user-name">{user?.name || 'Profile'}</span>
+              {user?.role && <span className="sidebar-user-role">{user.role}</span>}
+            </span>
           </NavLink>
           <button className="sidebar-link logout-btn" onClick={handleLogout}>
             <LogOutIcon size={20} />
