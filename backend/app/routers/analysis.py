@@ -1,7 +1,8 @@
 """
-Email analysis router.
+Email analysis router - Analyze emails and get spam/ham predictions.
 """
 import json
+import logging
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import Optional
@@ -13,6 +14,7 @@ from backend.app.schemas.schemas import (
 from backend.app.auth.auth import get_current_user
 from ml.prediction.predictor import predict_email
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/analysis", tags=["Analysis"])
 
 
