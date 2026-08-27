@@ -52,6 +52,10 @@ def train_model(
     from ml.training.trainer import train_models
     results = train_models(df)
 
+    # Reload model cache in predictor
+    from ml.prediction.predictor import reload_model
+    reload_model()
+
     best = results["results"][results["best_model"]]
     version = ModelVersion(
         version=results["best_version"],
