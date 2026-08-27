@@ -17,10 +17,10 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-      addToast('Login successful', 'success');
+      addToast('Welcome back!', 'success');
       navigate('/dashboard');
     } catch (err) {
-      addToast(err.response?.data?.detail || 'Login failed', 'error');
+      addToast(err.response?.data?.detail || 'Invalid credentials', 'error');
     } finally {
       setLoading(false);
     }
@@ -50,6 +50,9 @@ export default function LoginPage() {
         <p className="auth-footer">
           Don't have an account? <Link to="/register">Create one</Link>
         </p>
+        <div className="auth-demo-info">
+          <p className="text-muted">Demo: admin@spamdetect.com / admin123</p>
+        </div>
       </div>
     </div>
   );
