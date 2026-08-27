@@ -2,10 +2,28 @@
 Prediction engine for email spam detection.
 """
 from typing import Dict, Any, Optional, Tuple
+import logging
 from ml.models.model_manager import load_latest_model, get_latest_version
 from ml.preprocessing.text_cleaner import clean_text
 from ml.prediction.explainer import generate_explanation
 import numpy as np
+
+logger = logging.getLogger(__name__)
+
+_model_cache = {"model": None, "vectorizer": None, "info": None}
+
+
+def _get_model():
+    if _model_cache["model"] is None:
+        _model_cache["model"], _model_cache["vectorizer"], _model_cache["info"] = load_latest_model()
+    return _model_cache["model"], _model_cache["vectorizer"], _model_cache["info"]
+
+
+def reload_model():
+    """Force reload of model from disk."""
+    _model_cache["model"] = None
+    _model_cache["vectorizer"] = None
+    _model_cache["info"] = None
 
 
 def predict_email(
@@ -17,7 +35,17 @@ def predict_email(
 ) -> Dict[str, Any]:
     """Predict if an email is spam or ham."""
     if model is None or vectorizer is None:
-        model, vectorizer, version_info = load_latest_model()
+        try:
+            model, vectorizer, version_info = _get_model()
+        except FileNotFoundError:
+            return {
+                "prediction": "ham",
+                "confidence": 0.0,
+                "risk_level": "low",
+                "indicators": [{"type": "no_model", "severity": "none", "description": "No trained model available. Please train a model first."}],
+                "model_version": "none",
+                "algorithm": "none",
+            }
     else:
         version_info = get_latest_version() or {"version": "unknown", "algorithm": "unknown"}
 
