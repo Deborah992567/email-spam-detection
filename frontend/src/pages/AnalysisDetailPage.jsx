@@ -4,6 +4,7 @@ import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { ArrowLeftIcon, AlertTriangleIcon, CheckCircleIcon } from '../components/Icons';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { Skeleton } from '../components/Skeleton';
 
 export default function AnalysisDetailPage() {
   const { id } = useParams();
@@ -28,7 +29,18 @@ export default function AnalysisDetailPage() {
     }
   };
 
-  if (loading) return <div className="page-loading"><div className="spinner" /></div>;
+  if (loading) {
+    return (
+      <div className="page">
+        <div style={{ marginBottom: 16 }}><Skeleton width="120px" height={36} /></div>
+        <Skeleton height={120} style={{ borderRadius: 14 }} />
+        <div style={{ marginTop: 20 }}>
+          <Skeleton height={30} style={{ marginBottom: 14 }} />
+          <Skeleton height={200} style={{ borderRadius: 12 }} />
+        </div>
+      </div>
+    );
+  }
   if (!analysis) return <div className="empty-state"><p>Analysis not found.</p></div>;
 
   return (
