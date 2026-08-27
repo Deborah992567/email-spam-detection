@@ -105,3 +105,22 @@ def test_model_manager_registry(tmp_path):
     assert len(registry) == 1
 
     config.MODELS_DIR = original
+
+
+def test_sample_data_balanced_and_sufficient():
+    from backend.app.utils.sample_data import SAMPLE_EMAILS
+
+    assert len(SAMPLE_EMAILS) >= 10
+    labels = [s["label"] for s in SAMPLE_EMAILS]
+    spam = labels.count("spam")
+    ham = labels.count("ham")
+    assert spam > 0
+    assert ham > 0
+    assert len(labels) == len(SAMPLE_EMAILS)
+
+
+def test_sample_data_unique_messages():
+    from backend.app.utils.sample_data import SAMPLE_EMAILS
+
+    messages = [s["message"] for s in SAMPLE_EMAILS]
+    assert len(messages) == len(set(messages))
