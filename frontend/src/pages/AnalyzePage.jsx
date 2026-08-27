@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { MailIcon, ShieldIcon, AlertTriangleIcon, CheckCircleIcon } from '../components/Icons';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function AnalyzePage() {
   const [sender, setSender] = useState('');
@@ -12,6 +13,8 @@ export default function AnalyzePage() {
   const [result, setResult] = useState(null);
   const { addToast } = useToast();
   const navigate = useNavigate();
+
+  useDocumentTitle('Analyze Email');
 
   const handleSubmit = async (e) => {
     e.preventDefault();

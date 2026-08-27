@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { SearchIcon, FilterIcon, TrashIcon, ChevronRightIcon, MailIcon } from '../components/Icons';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function HistoryPage() {
   const [analyses, setAnalyses] = useState([]);
@@ -13,6 +14,8 @@ export default function HistoryPage() {
   const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
+
+  useDocumentTitle('Analysis History');
 
   useEffect(() => { fetchHistory(); }, [page, filter]);
 
