@@ -383,6 +383,24 @@ a:hover { text-decoration: none; }
 .indicator-desc { font-size: 13px; color: var(--text-secondary); }
 .result-actions { padding: 20px 26px; border-top: 1px solid var(--border-color); display: flex; gap: 12px; }
 
+/* Confidence ring animation */
+.confidence-animation { display: flex; justify-content: center; padding: 10px 0 26px; }
+.confidence-ring {
+  width: 150px; height: 150px; border-radius: 50%;
+  background: conic-gradient(var(--ring-color) var(--conf), var(--bg-tertiary) 0);
+  display: flex; align-items: center; justify-content: center;
+  animation: ringReveal 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 30px rgba(0,0,0,0.3);
+}
+@keyframes ringReveal { from { transform: rotate(-90deg) scale(0.8); opacity: 0; } to { transform: rotate(0deg) scale(1); opacity: 1; } }
+.confidence-ring-inner {
+  width: 118px; height: 118px; border-radius: 50%;
+  background: var(--bg-card); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px;
+}
+.confidence-ring-value { font-size: 30px; font-weight: 800; }
+.confidence-ring-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
 /* Detail Card */
 .detail-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow); animation: fadeInUp 0.4s ease; }
 .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 26px; }

@@ -99,6 +99,15 @@ export default function AnalyzePage() {
             <button className="btn btn-primary" onClick={resetForm}>Analyze Another Email</button>
             <button className="btn btn-outline" onClick={() => navigate('/history')}>View History</button>
           </div>
+
+          <div className="confidence-animation">
+            <div className="confidence-ring" style={{ '--conf': `${result.confidence}%`, '--ring-color': result.prediction === 'spam' ? 'var(--color-error)' : 'var(--color-success)' }}>
+              <div className="confidence-ring-inner">
+                <span className="confidence-ring-value">{result.confidence}%</span>
+                <span className="confidence-ring-label">Confidence</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
