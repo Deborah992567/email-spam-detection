@@ -25,14 +25,20 @@ from ml.utils.config import (
 
 def train_models(df: pd.DataFrame) -> Dict[str, Any]:
     """Train multiple models and return results."""
+    if df.empty:
+        raise ValueError("Training dataset is empty")
+
     texts = df["message"].tolist()
     labels = df["label"].map({"spam": 1, "ham": 0}).values
+
+    if len(set(labels)) < 2:
+        raise ValueError("Training dataset must contain both spam and ham samples")
 
     cleaned = clean_texts(texts)
 
     X_train, X_test, y_train, y_test = train_test_split(
         cleaned, labels, test_size=TEST_SIZE,
-        random_state=RANDOM_STATE, stratify=labels
+        random_state=RANDOM_STATE, stratify=labels,
     )
 
     vectorizer = TfidfVectorizer(
