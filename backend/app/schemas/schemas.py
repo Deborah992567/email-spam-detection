@@ -1,15 +1,15 @@
 """
 Pydantic schemas for request/response validation.
 """
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 
 class UserCreate(BaseModel):
-    name: str = Field(..., min_length=2, max_length=255)
-    email: EmailStr
-    password: str = Field(..., min_length=6, max_length=128)
+    name: str = Field(..., min_length=2, max_length=255, description="User's full name")
+    email: EmailStr = Field(..., description="Valid email address")
+    password: str = Field(..., min_length=6, max_length=128, description="Password (min 6 chars)")
 
 
 class UserLogin(BaseModel):
@@ -18,14 +18,12 @@ class UserLogin(BaseModel):
 
 
 class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
     email: str
     role: str
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class UserUpdate(BaseModel):
@@ -40,12 +38,13 @@ class TokenResponse(BaseModel):
 
 
 class AnalysisRequest(BaseModel):
-    sender: Optional[str] = Field(None, max_length=255)
-    subject: Optional[str] = Field(None, max_length=500)
-    body: str = Field(..., min_length=1, max_length=50000)
+    sender: Optional[str] = Field(None, max_length=255, description="Sender email address")
+    subject: Optional[str] = Field(None, max_length=500, description="Email subject line")
+    body: str = Field(..., min_length=1, max_length=50000, description="Email body text")
 
 
 class AnalysisResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     sender: Optional[str]
     subject: Optional[str]
@@ -57,9 +56,6 @@ class AnalysisResponse(BaseModel):
     model_version: Optional[str]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class AnalysisListResponse(BaseModel):
     items: List[Dict[str, Any]]
@@ -70,18 +66,16 @@ class AnalysisListResponse(BaseModel):
 
 
 class TrainingSampleCreate(BaseModel):
-    message: str = Field(..., min_length=1)
-    label: str = Field(..., pattern="^(spam|ham)$")
+    message: str = Field(..., min_length=1, description="Training text")
+    label: str = Field(..., pattern="^(spam|ham)$", description="'spam' or 'ham'")
 
 
 class TrainingSampleResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     message: str
     label: str
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class TrainingSampleListResponse(BaseModel):
@@ -93,6 +87,7 @@ class TrainingSampleListResponse(BaseModel):
 
 
 class ModelVersionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     version: str
     algorithm: str
@@ -101,9 +96,6 @@ class ModelVersionResponse(BaseModel):
     recall: float
     f1_score: float
     trained_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class TrainingResultResponse(BaseModel):
