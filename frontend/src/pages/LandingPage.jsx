@@ -22,14 +22,21 @@ export default function LandingPage() {
       </nav>
 
       <section className="hero">
-        <div className="hero-badge">
-          <ShieldIcon size={14} /> AI-Powered Email Security
+        <div className="hero-orbs">
+          <div className="hero-orb hero-orb-1" />
+          <div className="hero-orb hero-orb-2" />
+          <div className="hero-orb hero-orb-3" />
         </div>
-        <h1>Intelligent Email Spam<br />Detection</h1>
-        <p>Protect your inbox with advanced machine learning. Analyze emails in real-time and get instant spam classification with detailed, explainable results.</p>
-        <div className="hero-actions">
-          <Link to="/register" className="btn btn-primary btn-lg">Start Analyzing</Link>
-          <Link to="/login" className="btn btn-outline btn-lg">Sign In</Link>
+        <div className="hero-content">
+          <div className="hero-badge">
+            <ShieldIcon size={14} /> AI-Powered Email Security
+          </div>
+          <h1>Intelligent Email Spam<br />Detection</h1>
+          <p>Protect your inbox with advanced machine learning. Analyze emails in real-time and get instant spam classification with detailed, explainable results.</p>
+          <div className="hero-actions">
+            <Link to="/register" className="btn btn-primary btn-lg">Start Analyzing</Link>
+            <Link to="/login" className="btn btn-outline btn-lg">Sign In</Link>
+          </div>
         </div>
       </section>
 
