@@ -1,5 +1,6 @@
 """
-Seed data script for development.
+Seed data script for development - contains 40 sample emails (20 spam, 20 ham).
+These are clearly identified as sample data for development purposes.
 """
 import sys
 import os
@@ -11,8 +12,9 @@ sys.path.insert(0, str(project_root))
 from backend.app.database.connection import SessionLocal
 from backend.app.models.models import TrainingSample
 
+# SAMPLE DATA - Clearly identified as development sample data
 SAMPLE_DATA = [
-    # Spam samples
+    # === SPAM SAMPLES (20) ===
     {"message": "Congratulations! You've won a $1000 gift card. Click here to claim your prize now!", "label": "spam"},
     {"message": "URGENT: Your account has been suspended. Verify your identity immediately by clicking this link.", "label": "spam"},
     {"message": "FREE IPHONE - You have been selected to receive a free iPhone 15! Act now before the offer expires!", "label": "spam"},
@@ -33,7 +35,8 @@ SAMPLE_DATA = [
     {"message": "Dear customer, your package delivery failed. Click the link to reschedule delivery immediately.", "label": "spam"},
     {"message": "You have received a payment of $4,500. Click here to view details and claim your funds.", "label": "spam"},
     {"message": "FREE weight loss supplement! Lose 30 pounds in 30 days! No exercise required! Order now!", "label": "spam"},
-    # Ham samples
+
+    # === HAM SAMPLES (20) ===
     {"message": "Hi John, just wanted to follow up on our meeting yesterday. Let me know if you have any questions.", "label": "ham"},
     {"message": "Meeting reminder: Team standup tomorrow at 10am in Conference Room B.", "label": "ham"},
     {"message": "Hey, are you coming to the birthday party on Saturday? Let me know so I can plan accordingly.", "label": "ham"},
@@ -58,11 +61,12 @@ SAMPLE_DATA = [
 
 
 def seed():
+    """Seed development sample data into the training_samples table."""
     db = SessionLocal()
     try:
         existing_count = db.query(TrainingSample).count()
         if existing_count > 0:
-            print(f"Database already has {existing_count} samples. Skipping seed.")
+            print(f"Database already has {existing_count} training samples. Skipping seed.")
             return
 
         for item in SAMPLE_DATA:
@@ -70,7 +74,8 @@ def seed():
             db.add(sample)
 
         db.commit()
-        print(f"Seeded {len(SAMPLE_DATA)} training samples.")
+        print(f"Successfully seeded {len(SAMPLE_DATA)} development sample records (20 spam, 20 ham).")
+        print("NOTE: These are sample data for development/testing purposes only.")
     finally:
         db.close()
 
