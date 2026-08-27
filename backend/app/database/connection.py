@@ -2,7 +2,7 @@
 Database connection setup with connection pooling.
 """
 import logging
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 from backend.app.core.config import settings
 
@@ -41,7 +41,7 @@ def check_database_connection() -> bool:
     """Check if database is reachable."""
     try:
         with engine.connect() as conn:
-            conn.execute("SELECT 1")
+            conn.execute(text("SELECT 1"))
         return True
     except Exception as e:
         logger.error(f"Database connection failed: {e}")
