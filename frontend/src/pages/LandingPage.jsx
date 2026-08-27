@@ -79,6 +79,17 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <section className="cta">
+        <div className="cta-inner">
+          <h2>Ready to Secure Your Inbox?</h2>
+          <p>Create a free account and start analyzing emails with our intelligent spam detection system today.</p>
+          <div className="cta-actions">
+            <Link to="/register" className="btn btn-primary btn-lg">Create Free Account</Link>
+            <Link to="/login" className="btn btn-outline btn-lg">Sign In</Link>
+          </div>
+        </div>
+      </section>
+
       <footer className="landing-footer">
         <p>SpamShield - AI-Powered Email Spam Detection System</p>
       </footer>
