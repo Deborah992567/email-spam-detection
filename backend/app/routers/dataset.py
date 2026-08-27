@@ -6,6 +6,7 @@ import io
 import csv
 import logging
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import Optional
 from backend.app.database.connection import get_db
@@ -17,6 +18,52 @@ from backend.app.auth.auth import require_admin
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/dataset", tags=["Dataset"])
+
+
+@router.get("/template")
+def csv_template(
+    admin: User = Depends(require_admin),
+):
+    """Download a CSV template showing the expected format."""
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["label", "message"])
+    writer.writeheader()
+    writer.writerow({"label": "spam", "message": "Example spam email text goes here..."})
+    writer.writerow({"label": "ham", "message": "Example legitimate email text goes here..."})
+    output.seek(0)
+    headers = {"Content-Disposition": "attachment; filename=dataset_template.csv"}
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers=headers,
+    )
+
+
+@router.get("/export")
+def export_dataset(
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Export all training samples as a CSV download."""
+    samples = db.query(TrainingSample).order_by(TrainingSample.id).all()
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["id", "label", "source", "message", "created_at"])
+    writer.writeheader()
+    for s in samples:
+        writer.writerow({
+            "id": s.id,
+            "label": s.label,
+            "source": s.source,
+            "message": s.message,
+            "created_at": s.created_at.isoformat() if s.created_at else "",
+        })
+    output.seek(0)
+    headers = {"Content-Disposition": "attachment; filename=training_dataset.csv"}
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers=headers,
+    )
 
 
 @router.get("/", response_model=TrainingSampleListResponse)
@@ -66,7 +113,7 @@ def add_sample(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    sample = TrainingSample(message=data.message, label=data.label)
+    sample = TrainingSample(message=data.message, label=data.label, source="dataset")
     db.add(sample)
     db.commit()
     db.refresh(sample)
@@ -127,7 +174,7 @@ async def upload_dataset(
             skipped += 1
             continue
 
-        sample = TrainingSample(message=message, label=label)
+        sample = TrainingSample(message=message, label=label, source="dataset")
         db.add(sample)
         added += 1
 
@@ -144,7 +191,7 @@ def bulk_add_samples(
 ):
     added = 0
     for s in samples:
-        sample = TrainingSample(message=s.message, label=s.label)
+        sample = TrainingSample(message=s.message, label=s.label, source="dataset")
         db.add(sample)
         added += 1
     db.commit()

@@ -114,13 +114,33 @@ export default function DatasetManagement() {
     }
   };
 
+  const handleDownload = async (kind) => {
+    try {
+      const res = await api.get(`/api/dataset/${kind}`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = kind === 'template' ? 'dataset_template.csv' : 'training_dataset.csv';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      addToast('Download failed', 'error');
+    }
+  };
+
   return (
     <div className="page">
       <div className="page-header">
         <h1>Dataset Management</h1>
-        <button className="btn btn-outline" onClick={handleSeed} disabled={seeding}>
-          {seeding ? <><div className="spinner-sm" /> Seeding...</> : <><DatabaseIcon size={18} /> Seed Sample Data</>}
-        </button>
+        <div className="page-header-actions">
+          <button className="btn btn-outline" onClick={() => handleDownload('template')}>Download Template</button>
+          <button className="btn btn-outline" onClick={() => handleDownload('export')}>Export Dataset</button>
+          <button className="btn btn-outline" onClick={handleSeed} disabled={seeding}>
+            {seeding ? <><div className="spinner-sm" /> Seeding...</> : <><DatabaseIcon size={18} /> Seed Sample Data</>}
+          </button>
+        </div>
       </div>
 
       {stats && (
@@ -191,12 +211,13 @@ export default function DatasetManagement() {
           <>
             <div className="table-responsive">
               <table className="table">
-                <thead><tr><th>Message</th><th>Label</th><th>Date</th><th>Actions</th></tr></thead>
+                <thead><tr><th>Message</th><th>Label</th><th>Source</th><th>Date</th><th>Actions</th></tr></thead>
                 <tbody>
                   {samples.map(s => (
                     <tr key={s.id}>
                       <td className="text-truncate" style={{ maxWidth: 400 }}>{s.message}</td>
                       <td><span className={`badge badge-${s.label === 'spam' ? 'danger' : 'success'}`}>{s.label.toUpperCase()}</span></td>
+                      <td>{s.source === 'sample' ? <span className="badge badge-warning">Sample</span> : <span className="badge badge-info">Dataset</span>}</td>
                       <td>{new Date(s.created_at).toLocaleDateString()}</td>
                       <td><button className="btn btn-sm btn-danger" onClick={() => handleDelete(s.id)}><TrashIcon size={14} /></button></td>
                     </tr>

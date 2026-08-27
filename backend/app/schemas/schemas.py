@@ -75,6 +75,7 @@ class TrainingSampleResponse(BaseModel):
     id: int
     message: str
     label: str
+    source: str
     created_at: datetime
 
 
