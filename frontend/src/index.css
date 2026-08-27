@@ -143,6 +143,7 @@ a:hover { text-decoration: none; }
 .form-row { display: flex; gap: 12px; align-items: flex-end; }
 .form-row .form-group { flex: 1; margin-bottom: 0; }
 .required { color: var(--color-error); }
+.form-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
 
 /* Auth Pages */
 .auth-page {

@@ -134,6 +134,7 @@ export default function AnalyzePage() {
           <div className="form-group">
             <label>Email Body <span className="required">*</span></label>
             <textarea value={body} onChange={e => setBody(e.target.value)} placeholder="Paste the email content here..." rows={12} required />
+            <div className="form-hint">{body.length} characters · Minimum recommended: 20</div>
           </div>
           <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? <><div className="spinner-sm" /> Analyzing...</> : <><MailIcon size={18} /> Analyze Email</>}
