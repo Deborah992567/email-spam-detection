@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.app.database.connection import get_db
-from backend.app.models.models import User
+from backend.app.models.models import User, EmailAnalysis
 from backend.app.schemas.schemas import UserResponse, UserUpdate
 from backend.app.auth.auth import get_current_user, hash_password, verify_password
 
@@ -20,6 +20,28 @@ class PasswordChangeRequest(BaseModel):
 @router.get("/me", response_model=UserResponse, summary="Get current user profile")
 def get_profile(current_user: User = Depends(get_current_user)):
     return UserResponse.model_validate(current_user)
+
+
+@router.get("/me/stats", summary="Get current user's analysis statistics")
+def my_stats(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    total = db.query(EmailAnalysis).filter(EmailAnalysis.user_id == current_user.id).count()
+    spam = db.query(EmailAnalysis).filter(
+        EmailAnalysis.user_id == current_user.id,
+        EmailAnalysis.prediction == "spam",
+    ).count()
+    ham = db.query(EmailAnalysis).filter(
+        EmailAnalysis.user_id == current_user.id,
+        EmailAnalysis.prediction == "ham",
+    ).count()
+    return {
+        "total": total,
+        "spam": spam,
+        "ham": ham,
+        "member_since": current_user.created_at.isoformat() if current_user.created_at else None,
+    }
 
 
 @router.put("/me", response_model=UserResponse, summary="Update current user profile")
