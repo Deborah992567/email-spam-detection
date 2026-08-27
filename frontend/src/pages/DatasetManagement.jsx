@@ -130,6 +130,18 @@ export default function DatasetManagement() {
     }
   };
 
+  const handleClearAll = async () => {
+    if (!confirm('Delete ALL training samples? This cannot be undone. You may want to export first.')) return;
+    try {
+      await api.delete('/api/dataset/clear-all');
+      addToast('All training samples cleared', 'success');
+      fetchSamples();
+      fetchStats();
+    } catch (err) {
+      addToast('Failed to clear dataset', 'error');
+    }
+  };
+
   return (
     <div className="page">
       <div className="page-header">
@@ -140,6 +152,7 @@ export default function DatasetManagement() {
           <button className="btn btn-outline" onClick={handleSeed} disabled={seeding}>
             {seeding ? <><div className="spinner-sm" /> Seeding...</> : <><DatabaseIcon size={18} /> Seed Sample Data</>}
           </button>
+          {total > 0 && <button className="btn btn-danger" onClick={handleClearAll}>Clear All</button>}
         </div>
       </div>
 

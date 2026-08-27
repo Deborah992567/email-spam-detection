@@ -198,6 +198,17 @@ def bulk_add_samples(
     return {"message": f"Added {added} samples"}
 
 
+@router.delete("/clear-all", summary="Delete all training samples")
+def clear_all_samples(
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    count = db.query(TrainingSample).count()
+    db.query(TrainingSample).delete()
+    db.commit()
+    return {"message": f"Cleared all {count} training samples"}
+
+
 @router.delete("/{sample_id}")
 def delete_sample(
     sample_id: int,
