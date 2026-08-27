@@ -649,3 +649,25 @@ a:hover { text-decoration: none; }
   .result-actions { flex-direction: column; }
   .result-actions .btn { width: 100%; justify-content: center; }
 }
+
+/* 404 & Error Boundary */
+.not-found-page, .error-boundary {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 24px; background: radial-gradient(ellipse at top, #1a1f4d 0%, var(--bg-primary) 60%);
+}
+.not-found-card, .error-boundary-card {
+  max-width: 420px; width: 100%; text-align: center; padding: 44px 36px;
+  background: var(--bg-card); border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+  animation: fadeInUp 0.5s ease both;
+}
+.not-found-code {
+  font-size: 72px; font-weight: 800; line-height: 1;
+  background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text;
+  color: transparent; margin-bottom: 16px;
+}
+.not-found-icon, .error-boundary-icon { display: flex; justify-content: center; margin-bottom: 16px; }
+.not-found-card h1 { font-size: 24px; margin-bottom: 10px; }
+.error-boundary-card h2 { font-size: 24px; margin-bottom: 10px; }
+.not-found-card p, .error-boundary-card p { color: var(--text-secondary); margin-bottom: 24px; }
+.error-boundary-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
