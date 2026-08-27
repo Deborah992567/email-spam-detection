@@ -9,6 +9,8 @@ venv/
 env/
 .venv/
 .env
+.env.local
+.env.production
 
 # IDE
 .vscode/
@@ -29,16 +31,14 @@ frontend/dist/
 
 # ML artifacts
 ml/models/saved/*.joblib
+ml/models/saved/latest.json
 ml/models/model_registry.json
 ml/dataset/*.csv
-
-# Environment
-.env
-.env.local
-.env.production
+ml/dataset/*.txt
 
 # Database
 *.db
+*.sql
 
 # Logs
 *.log
@@ -46,4 +46,11 @@ ml/dataset/*.csv
 # Coverage
 htmlcov/
 .coverage
+.coverage.*
 coverage/
+.pytest_cache/
+
+# Distribution
+dist/
+build/
+*.egg-info/
