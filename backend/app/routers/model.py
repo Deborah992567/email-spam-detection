@@ -48,12 +48,28 @@ def train_model(
             detail=f"Not enough training samples ({len(samples)}). Need at least 10.",
         )
 
+    # Check both classes present
+    labels = {s.label for s in samples}
+    if labels != {"spam", "ham"}:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Dataset must contain both 'spam' and 'ham' samples. Found: {labels}",
+        )
+
     import pandas as pd
     data = [{"label": s.label, "message": s.message} for s in samples]
     df = pd.DataFrame(data)
 
-    from ml.training.trainer import train_models
-    results = train_models(df)
+    logger.info(f"Training model with {len(samples)} samples")
+
+    try:
+        from ml.training.trainer import train_models
+        results = train_models(df)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Training failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Training failed: {str(e)}")
 
     # Reload model cache in predictor
     from ml.prediction.predictor import reload_model
@@ -70,6 +86,7 @@ def train_model(
     )
     db.add(version)
     db.commit()
+    logger.info(f"Model trained successfully: {results['best_model']} ({results['best_version']})")
 
     return TrainingResultResponse(
         best_model=results["best_model"],
