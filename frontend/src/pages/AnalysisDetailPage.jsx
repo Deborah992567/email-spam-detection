@@ -38,11 +38,21 @@ export default function AnalysisDetailPage() {
       </div>
 
       <div className="detail-card">
-        <div className={`result-banner result-${analysis.prediction}`}>
-          {analysis.prediction === 'spam' ? <AlertTriangleIcon size={32} /> : <CheckCircleIcon size={32} />}
-          <div>
-            <h2>{analysis.prediction === 'spam' ? 'SPAM DETECTED' : 'LEGITIMATE EMAIL'}</h2>
-            <p>{analysis.confidence}% confidence</p>
+        <div className="detail-banner-row">
+          <div className={`result-banner result-${analysis.prediction}`}>
+            {analysis.prediction === 'spam' ? <AlertTriangleIcon size={32} /> : <CheckCircleIcon size={32} />}
+            <div>
+              <h2>{analysis.prediction === 'spam' ? 'SPAM DETECTED' : 'LEGITIMATE EMAIL'}</h2>
+              <p>{analysis.confidence}% confidence</p>
+            </div>
+          </div>
+          <div className="confidence-animation">
+            <div className="confidence-ring confidence-ring-sm" style={{ '--conf': `${analysis.confidence}%`, '--ring-color': analysis.prediction === 'spam' ? 'var(--color-error)' : 'var(--color-success)' }}>
+              <div className="confidence-ring-inner">
+                <span className="confidence-ring-value">{analysis.confidence}%</span>
+                <span className="confidence-ring-label">Confidence</span>
+              </div>
+            </div>
           </div>
         </div>
 
