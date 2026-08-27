@@ -104,7 +104,18 @@ def dataset_stats(
     total = db.query(TrainingSample).count()
     spam = db.query(TrainingSample).filter(TrainingSample.label == "spam").count()
     ham = db.query(TrainingSample).filter(TrainingSample.label == "ham").count()
-    return {"total": total, "spam": spam, "ham": ham}
+    sample_count = db.query(TrainingSample).filter(TrainingSample.source == "sample").count()
+    dataset_count = db.query(TrainingSample).filter(TrainingSample.source == "dataset").count()
+    return {
+        "total": total,
+        "spam": spam,
+        "ham": ham,
+        "source": {
+            "sample": sample_count,
+            "dataset": dataset_count,
+        },
+        "source_label": "sample" if total > 0 and sample_count >= dataset_count else "dataset",
+    }
 
 
 @router.post("/", response_model=TrainingSampleResponse, status_code=201)

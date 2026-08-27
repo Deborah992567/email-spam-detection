@@ -158,7 +158,7 @@ export default function DatasetManagement() {
       </div>
 
       {stats && (
-        <div className="stats-grid stats-grid-3">
+        <div className="stats-grid stats-grid-4">
           <div className="stat-card">
             <div className="stat-icon stat-icon-blue"><DatabaseIcon size={24} /></div>
             <div className="stat-info"><span className="stat-value">{stats.total}</span><span className="stat-label">Total Samples</span></div>
@@ -170,6 +170,15 @@ export default function DatasetManagement() {
           <div className="stat-card">
             <div className="stat-icon stat-icon-green"><span className="stat-value-inner">{stats.ham}</span></div>
             <div className="stat-info"><span className="stat-value">{stats.ham}</span><span className="stat-label">Ham</span></div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-icon stat-icon-orange"><span className="stat-value-inner">{stats.source_label === 'sample' ? 'S' : 'D'}</span></div>
+            <div className="stat-info">
+              <span className="stat-value-sm">
+                {stats.source_label === 'sample' ? `${stats.source?.sample ?? 0} sample` : `${stats.source?.dataset ?? 0} real`}
+              </span>
+              <span className="stat-label">Primary Source</span>
+            </div>
           </div>
         </div>
       )}
