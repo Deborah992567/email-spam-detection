@@ -113,7 +113,7 @@ async def upload_dataset(
 
     added = 0
     skipped = 0
-    label_map = {"spam": "spam", "ham": "ham", "1": "spam", "0": "ham"}
+    label_map = {"spam": "spam", "ham": "ham", "1": "spam", "0": "ham", "true": "spam", "false": "ham", "yes": "spam", "no": "ham"}
 
     for row in reader:
         raw_label = row.get(label_col, "").strip().lower()
@@ -132,7 +132,8 @@ async def upload_dataset(
         added += 1
 
     db.commit()
-    return {"message": f"Dataset uploaded. Added {added} samples, skipped {skipped}."}
+    logger.info(f"Dataset uploaded: {added} samples added, {skipped} skipped")
+    return {"message": f"Dataset uploaded successfully. Added {added} samples, skipped {skipped}."}
 
 
 @router.post("/bulk", status_code=201)
