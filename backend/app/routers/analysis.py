@@ -82,11 +82,14 @@ def list_analyses(
 
     items = query.offset((page - 1) * per_page).limit(per_page).all()
 
+    response_items = []
+    for a in items:
+        resp = AnalysisResponse.model_validate(a)
+        resp.indicators = json.loads(a.indicators) if a.indicators else None
+        response_items.append(resp.model_dump())
+
     return AnalysisListResponse(
-        items=[
-            {**AnalysisResponse.model_validate(a).model_dump(), "indicators": json.loads(a.indicators) if a.indicators else None}
-            for a in items
-        ],
+        items=response_items,
         total=total,
         page=page,
         per_page=per_page,

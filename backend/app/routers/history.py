@@ -41,11 +41,14 @@ def get_history(
         (page - 1) * per_page
     ).limit(per_page).all()
 
+    response_items = []
+    for a in items:
+        resp = AnalysisResponse.model_validate(a)
+        resp.indicators = json.loads(a.indicators) if a.indicators else None
+        response_items.append(resp.model_dump())
+
     return AnalysisListResponse(
-        items=[
-            {**AnalysisResponse.model_validate(a).model_dump(), "indicators": json.loads(a.indicators) if a.indicators else None}
-            for a in items
-        ],
+        items=response_items,
         total=total,
         page=page,
         per_page=per_page,
@@ -66,10 +69,11 @@ def get_dashboard_stats(
     spam_pct = round((spam_count / total * 100) if total > 0 else 0, 1)
 
     recent = user_analyses.order_by(EmailAnalysis.created_at.desc()).limit(5).all()
-    recent_items = [
-        {**AnalysisResponse.model_validate(a).model_dump(), "indicators": json.loads(a.indicators) if a.indicators else None}
-        for a in recent
-    ]
+    recent_items = []
+    for a in recent:
+        resp = AnalysisResponse.model_validate(a)
+        resp.indicators = json.loads(a.indicators) if a.indicators else None
+        recent_items.append(resp.model_dump())
 
     daily = []
     for i in range(6, -1, -1):
