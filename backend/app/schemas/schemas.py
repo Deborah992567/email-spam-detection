@@ -62,7 +62,7 @@ class AnalysisResponse(BaseModel):
 
 
 class AnalysisListResponse(BaseModel):
-    items: List[AnalysisResponse]
+    items: List[Dict[str, Any]]
     total: int
     page: int
     per_page: int
@@ -120,7 +120,7 @@ class DashboardStats(BaseModel):
     spam_count: int
     ham_count: int
     spam_percentage: float
-    recent_analyses: List[AnalysisResponse]
+    recent_analyses: List[Dict[str, Any]]
     daily_stats: List[Dict[str, Any]]
 
 
