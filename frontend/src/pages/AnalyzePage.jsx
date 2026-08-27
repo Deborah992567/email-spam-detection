@@ -42,6 +42,18 @@ export default function AnalyzePage() {
     setResult(null);
   };
 
+  const fillSample = () => {
+    setSender('prize-claims@winbig.example.com');
+    setSubject('CONGRATULATIONS! You have WON $10,000 - Claim now!!!');
+    setBody(
+      'Dear winner,\n\nCONGRATULATIONS!!! You have been selected to receive a cash prize of $10,000 USD!!! ' +
+      'To claim your reward, simply click the link below and enter your bank details within 24 hours.\n\n' +
+      'This offer is 100% FREE and expires immediately. Do not miss this limited time opportunity!\n\n' +
+      'Click here to claim your prize now!\n\nBest regards,\nClaims Department'
+    );
+    setResult(null);
+  };
+
   if (result) {
     return (
       <div className="page">
@@ -121,6 +133,9 @@ export default function AnalyzePage() {
     <div className="page">
       <div className="page-header">
         <h1>Analyze Email</h1>
+        <div className="page-header-actions">
+          <button type="button" className="btn btn-outline" onClick={fillSample}>Try Sample Email</button>
+        </div>
       </div>
       <div className="card">
         <form onSubmit={handleSubmit}>
