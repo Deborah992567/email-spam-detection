@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { BrainIcon, PlayIcon, CheckCircleIcon, DatabaseIcon } from '../components/Icons';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function ModelPerformance() {
   const [versions, setVersions] = useState([]);
@@ -12,6 +13,8 @@ export default function ModelPerformance() {
   const [trainResult, setTrainResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
+
+  useDocumentTitle('Model Performance');
 
   useEffect(() => { fetchData(); }, []);
 
