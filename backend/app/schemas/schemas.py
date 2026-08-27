@@ -44,7 +44,7 @@ class AnalysisRequest(BaseModel):
 
 
 class AnalysisResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, protected_namespaces=())
     id: int
     sender: Optional[str]
     subject: Optional[str]
@@ -119,6 +119,7 @@ class DashboardStats(BaseModel):
 
 
 class AdminStats(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
     total_users: int
     total_analyses: int
     spam_count: int

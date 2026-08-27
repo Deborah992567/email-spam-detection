@@ -14,8 +14,12 @@ try:
     for resource in ["punkt", "stopwords", "wordnet", "punkt_tab", "omw-1.4"]:
         try:
             nltk.data.find(f"tokenizers/{resource}" if resource.startswith("punkt") else f"corpora/{resource}")
-        except LookupError:
-            nltk.download(resource, quiet=True)
+        except (LookupError, OSError):
+            try:
+                nltk.download(resource, quiet=True)
+            except Exception:
+                # Network / certificate failures must not block import
+                pass
 except ImportError:
     nltk = None
 
@@ -26,7 +30,10 @@ _LEMMATIZER = None
 def _get_stopwords() -> set:
     global _STOPWORDS
     if _STOPWORDS is None and nltk is not None:
-        _STOPWORDS = set(stopwords.words("english"))
+        try:
+            _STOPWORDS = set(stopwords.words("english"))
+        except Exception:
+            _STOPWORDS = set()
     else:
         _STOPWORDS = set()
     return _STOPWORDS
@@ -35,7 +42,10 @@ def _get_stopwords() -> set:
 def _get_lemmatizer():
     global _LEMMATIZER
     if _LEMMATIZER is None and nltk is not None:
-        _LEMMATIZER = WordNetLemmatizer()
+        try:
+            _LEMMATIZER = WordNetLemmatizer()
+        except Exception:
+            _LEMMATIZER = None
     return _LEMMATIZER
 
 
@@ -46,10 +56,10 @@ def clean_text(text: str, use_lemmatization: bool = False) -> str:
 
     text = text.lower()
     text = re.sub(r"<[^>]+>", " ", text)
-    text = re.sub(r"http[s]?://\S+|www\.\S+", " URL ", text)
-    text = re.sub(r"\S+@\S+\.\S+", " EMAIL ", text)
-    text = re.sub(r"(\+?\d[\d\s\-\(\)]{7,}\d)", " PHONE ", text)
-    text = re.sub(r"\d+", " NUM ", text)
+    text = re.sub(r"http[s]?://\S+|www\.\S+", " url ", text)
+    text = re.sub(r"\S+@\S+\.\S+", " email ", text)
+    text = re.sub(r"(\+?\d[\d\s\-\(\)]{7,}\d)", " phone ", text)
+    text = re.sub(r"\d+", " num ", text)
     text = text.translate(str.maketrans("", "", string.punctuation))
     text = re.sub(r"\s+", " ", text).strip()
 
