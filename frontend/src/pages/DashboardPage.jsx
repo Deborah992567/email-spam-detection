@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { ShieldIcon, MailIcon, AlertTriangleIcon, CheckCircleIcon, ChevronRightIcon } from '../components/Icons';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area } from 'recharts';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState(null);
@@ -32,6 +32,15 @@ export default function DashboardPage() {
   ];
   const COLORS = ['#ef4444', '#22c55e'];
 
+  const riskData = stats.risk_distribution ? [
+    { name: 'High', value: stats.risk_distribution.high || 0 },
+    { name: 'Medium', value: stats.risk_distribution.medium || 0 },
+    { name: 'Low', value: stats.risk_distribution.low || 0 },
+  ].filter(d => d.value > 0) : [];
+  const RISK_COLORS = ['#ef4444', '#f59e0b', '#22c55e'];
+
+  const trendData = stats.daily_stats || [];
+
   return (
     <div className="page">
       <div className="page-header">
@@ -43,28 +52,28 @@ export default function DashboardPage() {
 
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon stat-icon-blue"><MailIcon size={24} /></div>
+          <div className="stat-icon stat-icon-blue"><MailIcon size={26} /></div>
           <div className="stat-info">
             <span className="stat-value">{stats.total_analyses}</span>
             <span className="stat-label">Total Analyzed</span>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon stat-icon-red"><AlertTriangleIcon size={24} /></div>
+          <div className="stat-icon stat-icon-red"><AlertTriangleIcon size={26} /></div>
           <div className="stat-info">
             <span className="stat-value">{stats.spam_count}</span>
             <span className="stat-label">Spam Detected</span>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon stat-icon-green"><CheckCircleIcon size={24} /></div>
+          <div className="stat-icon stat-icon-green"><CheckCircleIcon size={26} /></div>
           <div className="stat-info">
             <span className="stat-value">{stats.ham_count}</span>
             <span className="stat-label">Legitimate</span>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon stat-icon-purple"><ShieldIcon size={24} /></div>
+          <div className="stat-icon stat-icon-purple"><ShieldIcon size={26} /></div>
           <div className="stat-info">
             <span className="stat-value">{stats.spam_percentage}%</span>
             <span className="stat-label">Spam Rate</span>
@@ -76,14 +85,14 @@ export default function DashboardPage() {
         <div className="chart-card">
           <h3>Spam vs Ham Distribution</h3>
           {stats.total_analyses > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={260}>
               <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value">
+                <Pie data={pieData} cx="50%" cy="50%" innerRadius={62} outerRadius={92} paddingAngle={5} dataKey="value">
                   {pieData.map((_, index) => (
                     <Cell key={index} fill={COLORS[index]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderRadius: 8 }} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
@@ -93,23 +102,52 @@ export default function DashboardPage() {
         </div>
 
         <div className="chart-card">
-          <h3>Analysis Activity (Last 7 Days)</h3>
-          {stats.daily_stats && stats.daily_stats.some(d => d.total > 0) ? (
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={stats.daily_stats}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip />
+          <h3>Risk Level Distribution</h3>
+          {riskData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie data={riskData} cx="50%" cy="50%" innerRadius={62} outerRadius={92} paddingAngle={5} dataKey="value">
+                  {riskData.map((_, index) => (
+                    <Cell key={index} fill={RISK_COLORS[index]} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderRadius: 8 }} />
                 <Legend />
-                <Bar dataKey="spam" fill="#ef4444" name="Spam" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="ham" fill="#22c55e" name="Ham" radius={[4, 4, 0, 0]} />
-              </BarChart>
+              </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="empty-state"><p>No activity data yet</p></div>
+            <div className="empty-state"><p>No risk data yet</p></div>
           )}
         </div>
+      </div>
+
+      <div className="chart-card">
+        <h3>Analysis Trend (Last 30 Days)</h3>
+        {trendData.some(d => d.total > 0) ? (
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart data={trendData}>
+              <defs>
+                <linearGradient id="spamGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="hamGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#22c55e" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
+              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
+              <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderRadius: 8 }} />
+              <Legend />
+              <Area type="monotone" dataKey="spam" stroke="#ef4444" fill="url(#spamGrad)" name="Spam" />
+              <Area type="monotone" dataKey="ham" stroke="#22c55e" fill="url(#hamGrad)" name="Ham" />
+            </AreaChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="empty-state"><p>No activity data yet</p></div>
+        )}
       </div>
 
       <div className="card">
