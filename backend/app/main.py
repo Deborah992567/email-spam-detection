@@ -10,8 +10,9 @@ project_root = Path(__file__).resolve().parent.parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from backend.app.core.config import settings
 from backend.app.database.connection import engine, Base
 from backend.app.routers import auth, users, analysis, history, admin, dataset, model, dashboard
@@ -45,6 +46,14 @@ app.include_router(dashboard.router)
 app.include_router(admin.router)
 app.include_router(dataset.router)
 app.include_router(model.router)
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"},
+    )
 
 
 @app.get("/")
