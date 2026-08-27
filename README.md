@@ -17,6 +17,8 @@ An AI-powered web application that analyzes emails to detect spam using machine 
 - **Auto-Seed & Train**: When no training data exists, seed clearly-labeled sample data and train a working model with one click
 - **Model Versioning**: Track model versions, compare algorithms, view evaluation metrics
 - **Role-Based Access**: Normal users cannot access admin endpoints
+- **File-Based Logging**: Backend, HTTP access, and ML activity logged to rotating files in `logs/`
+- **Graceful Error Handling**: React error boundary and 404 page
 
 ## Screenshots
 
