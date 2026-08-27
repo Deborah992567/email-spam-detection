@@ -1,7 +1,9 @@
 """
-Admin router for user management, system stats, and administration.
+Admin router - User management, system stats, and administration.
+Requires admin role for all endpoints.
 """
 import json
+import logging
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -14,6 +16,7 @@ from backend.app.schemas.schemas import (
 )
 from backend.app.auth.auth import require_admin
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
 
