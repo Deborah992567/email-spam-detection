@@ -4,11 +4,14 @@ import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { UsersIcon, MailIcon, AlertTriangleIcon, CheckCircleIcon, DatabaseIcon, BrainIcon } from '../components/Icons';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
+
+  useDocumentTitle('Admin Dashboard');
 
   useEffect(() => { fetchStats(); }, []);
 

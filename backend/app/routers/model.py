@@ -25,6 +25,121 @@ def list_versions(
     return [ModelVersionResponse.model_validate(v) for v in versions]
 
 
+@router.get("/dataset-status")
+def dataset_status(
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    from backend.app.utils.sample_data import SAMPLE_EMAILS
+
+    total = db.query(TrainingSample).count()
+    spam = db.query(TrainingSample).filter(TrainingSample.label == "spam").count()
+    ham = db.query(TrainingSample).filter(TrainingSample.label == "ham").count()
+    return {
+        "total": total,
+        "spam": spam,
+        "ham": ham,
+        "enough_to_train": total >= 10 and spam > 0 and ham > 0,
+        "source": "sample" if total <= len(SAMPLE_EMAILS) else "dataset",
+    }
+
+
+@router.post("/seed-sample-data")
+def seed_sample_data(
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    from backend.app.utils.sample_data import SAMPLE_EMAILS
+
+    existing = db.query(TrainingSample).count()
+    seeded = 0
+    for item in SAMPLE_EMAILS:
+        exists = db.query(TrainingSample).filter(
+            TrainingSample.message == item["message"]
+        ).first()
+        if not exists:
+            db.add(TrainingSample(
+                message=item["message"],
+                label=item["label"],
+                source="sample",
+            ))
+            seeded += 1
+    db.commit()
+    return {
+        "seeded": seeded,
+        "skipped": len(SAMPLE_EMAILS) - seeded,
+        "total_before": existing,
+        "total_now": db.query(TrainingSample).count(),
+        "note": "Seeded clearly-labeled SAMPLE data for development. Replace with a real dataset for production use.",
+    }
+
+
+@router.post("/seed-and-train")
+def seed_and_train(
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    from backend.app.utils.sample_data import SAMPLE_EMAILS
+
+    seeded = 0
+    for item in SAMPLE_EMAILS:
+        exists = db.query(TrainingSample).filter(
+            TrainingSample.message == item["message"]
+        ).first()
+        if not exists:
+            db.add(TrainingSample(message=item["message"], label=item["label"], source="sample"))
+            seeded += 1
+    db.commit()
+
+    samples = db.query(TrainingSample).all()
+    labels = {s.label for s in samples}
+    if len(samples) < 10 or labels != {"spam", "ham"}:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Not enough varied samples ({len(samples)}) to train.",
+        )
+
+    import pandas as pd
+    data = [{"label": s.label, "message": s.message} for s in samples]
+    df = pd.DataFrame(data)
+
+    try:
+        from ml.training.trainer import train_models
+        results = train_models(df)
+    except Exception as e:
+        logger.error(f"Training failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Training failed: {str(e)}")
+
+    from ml.prediction.predictor import reload_model
+    reload_model()
+
+    best = results["results"][results["best_model"]]
+    version = ModelVersion(
+        version=results["best_version"],
+        algorithm=results["best_model"],
+        accuracy=best["accuracy"],
+        precision=best["precision"],
+        recall=best["recall"],
+        f1_score=best["f1_score"],
+    )
+    db.add(version)
+    db.commit()
+
+    return {
+        "seeded": seeded,
+        "total_samples": results["total_samples"],
+        "best_model": results["best_model"],
+        "best_version": results["best_version"],
+        "metrics": {
+            "accuracy": best["accuracy"],
+            "precision": best["precision"],
+            "recall": best["recall"],
+            "f1_score": best["f1_score"],
+        },
+        "note": "Model trained on clearly-labeled SAMPLE data for development.",
+    }
+
+
 @router.get("/current")
 def get_current_model(
     admin: User = Depends(require_admin),

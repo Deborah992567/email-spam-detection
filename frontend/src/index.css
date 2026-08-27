@@ -226,6 +226,10 @@ a:hover { text-decoration: none; }
 .page { max-width: 1240px; }
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
 .page-header h1 { font-size: 26px; font-weight: 700; background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.page-header-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.dataset-card { margin-bottom: 20px; }
+.dataset-note { margin-top: 14px; padding: 12px 14px; border: 1px solid rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); border-radius: 10px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.dataset-note strong { color: var(--color-warning); }
 .page-loading { display: flex; justify-content: center; padding: 60px; }
 
 /* Spinner */

@@ -55,6 +55,7 @@ class TrainingSample(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     message = Column(Text, nullable=False)
     label = Column(String(10), nullable=False)
+    source = Column(String(20), default="dataset", nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 

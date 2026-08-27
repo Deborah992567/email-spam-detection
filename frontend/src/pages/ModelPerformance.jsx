@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
-import { BrainIcon, PlayIcon, CheckCircleIcon } from '../components/Icons';
+import { BrainIcon, PlayIcon, CheckCircleIcon, DatabaseIcon } from '../components/Icons';
 
 export default function ModelPerformance() {
   const [versions, setVersions] = useState([]);
   const [currentModel, setCurrentModel] = useState(null);
+  const [dataset, setDataset] = useState(null);
   const [training, setTraining] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const [trainResult, setTrainResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
@@ -15,16 +17,39 @@ export default function ModelPerformance() {
 
   const fetchData = async () => {
     try {
-      const [verRes, curRes] = await Promise.all([
+      const [verRes, curRes, dsRes] = await Promise.all([
         api.get('/api/model/versions'),
         api.get('/api/model/current'),
+        api.get('/api/model/dataset-status'),
       ]);
       setVersions(verRes.data);
       setCurrentModel(curRes.data);
+      setDataset(dsRes.data);
     } catch (err) {
       addToast('Failed to load model data', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSeedAndTrain = async () => {
+    if (!confirm('No training data found. Seed the app with SAMPLE data (for development) and train the model automatically? This is NOT production data.')) return;
+    setSeeding(true);
+    setTrainResult(null);
+    try {
+      const res = await api.post('/api/model/seed-and-train');
+      setTrainResult({
+        ...res.data,
+        results: { [res.data.best_model]: res.data.metrics ? { ...res.data.metrics } : {} },
+        train_size: Math.round(res.data.total_samples * 0.8),
+        test_size: res.data.total_samples - Math.round(res.data.total_samples * 0.8),
+      });
+      addToast('Sample data seeded and model trained!', 'success');
+      fetchData();
+    } catch (err) {
+      addToast(err.response?.data?.detail || 'Seeding/training failed', 'error');
+    } finally {
+      setSeeding(false);
     }
   };
 
@@ -46,14 +71,43 @@ export default function ModelPerformance() {
 
   if (loading) return <div className="page-loading"><div className="spinner" /></div>;
 
+  const canTrain = dataset && dataset.enough_to_train;
+
   return (
     <div className="page">
       <div className="page-header">
         <h1>Model Performance</h1>
-        <button className="btn btn-primary" onClick={handleTrain} disabled={training}>
-          {training ? <><div className="spinner-sm" /> Training...</> : <><PlayIcon size={18} /> Train/Retrain Model</>}
-        </button>
+        <div className="page-header-actions">
+          {!canTrain && (
+            <button className="btn btn-outline" onClick={handleSeedAndTrain} disabled={seeding}>
+              {seeding ? <><div className="spinner-sm" /> Seeding &amp; Training...</> : <><DatabaseIcon size={18} /> Seed Sample Data &amp; Train</>}
+            </button>
+          )}
+          <button className="btn btn-primary" onClick={handleTrain} disabled={training || !canTrain}>
+            {training ? <><div className="spinner-sm" /> Training...</> : <><PlayIcon size={18} /> Train/Retrain Model</>}
+          </button>
+        </div>
       </div>
+
+      {dataset && (
+        <div className="card dataset-card">
+          <h3><DatabaseIcon size={18} /> Training Dataset</h3>
+          <div className="model-info-grid">
+            <div className="model-info-item"><span className="label">Total Samples:</span><span className="value">{dataset.total}</span></div>
+            <div className="model-info-item"><span className="label">Spam:</span><span className="value">{dataset.spam}</span></div>
+            <div className="model-info-item"><span className="label">Ham:</span><span className="value">{dataset.ham}</span></div>
+            <div className="model-info-item"><span className="label">Source:</span><span className="value">{dataset.source === 'sample' ? 'Sample (dev)' : 'Dataset'}</span></div>
+            <div className="model-info-item"><span className="label">Ready to Train:</span><span className={`badge ${canTrain ? 'badge-success' : 'badge-warning'}`}>{canTrain ? 'Yes' : 'No'}</span></div>
+          </div>
+          {!canTrain && (
+            <p className="dataset-note">
+              No sufficient training data detected. If you don't have a real dataset yet, use
+              <strong> Seed Sample Data &amp; Train</strong> to load clearly-labeled development samples and train a
+              working model automatically. For production use, upload a real dataset via the Dataset page instead.
+            </p>
+          )}
+        </div>
+      )}
 
       {currentModel && currentModel.status !== 'no_model' && (
         <div className="card">
