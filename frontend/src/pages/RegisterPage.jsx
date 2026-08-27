@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { ShieldIcon } from '../components/Icons';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -13,6 +14,8 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+
+  useDocumentTitle('Create Account');
 
   const handleSubmit = async (e) => {
     e.preventDefault();

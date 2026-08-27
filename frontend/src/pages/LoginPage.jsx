@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { ShieldIcon } from '../components/Icons';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,8 @@ export default function LoginPage() {
   const { login } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+
+  useDocumentTitle('Sign In');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
