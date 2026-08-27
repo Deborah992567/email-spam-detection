@@ -98,8 +98,8 @@ export default function DashboardPage() {
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={stats.daily_stats}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
+                <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip />
                 <Legend />
                 <Bar dataKey="spam" fill="#ef4444" name="Spam" radius={[4, 4, 0, 0]} />
