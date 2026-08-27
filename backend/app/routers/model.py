@@ -1,8 +1,10 @@
 """
-Model management router for administrators.
+Model management router - Train, evaluate, and manage ML models.
+Requires admin role for all endpoints.
 """
 import sys
 import os
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.app.database.connection import get_db, SessionLocal
@@ -10,6 +12,7 @@ from backend.app.models.models import User, ModelVersion, TrainingSample
 from backend.app.schemas.schemas import ModelVersionResponse, TrainingResultResponse
 from backend.app.auth.auth import require_admin
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/model", tags=["Model"])
 
 
