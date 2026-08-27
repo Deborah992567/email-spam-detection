@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+
+# ML artifacts
+ml/models/saved/*.joblib
+ml/models/model_registry.json
+ml/dataset/*.csv
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Database
+*.db
+
+# Logs
+*.log
+
+# Coverage
+htmlcov/
+.coverage
+coverage/
