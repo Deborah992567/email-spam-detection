@@ -101,6 +101,7 @@ export default function AnalyzePage() {
           <div className="result-actions">
             <button className="btn btn-primary" onClick={resetForm}>Analyze Another Email</button>
             <button className="btn btn-outline" onClick={() => navigate('/history')}>View History</button>
+            {result.id && <button className="btn btn-outline" onClick={() => navigate(`/history/${result.id}`)}>View Full Report</button>}
           </div>
 
           <div className="confidence-animation">
