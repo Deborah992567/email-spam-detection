@@ -379,6 +379,7 @@ Once the backend is running:
 | Method | Endpoint              | Description         | Auth   |
 |--------|-----------------------|---------------------|--------|
 | GET    | `/api/users/me`       | Get profile         | User   |
+| GET    | `/api/users/me/stats` | Personal analysis stats | User |
 | PUT    | `/api/users/me`       | Update profile      | User   |
 | PUT    | `/api/users/me/password` | Change password  | User   |
 
@@ -422,6 +423,7 @@ Once the backend is running:
 | POST   | `/api/dataset/upload`     | Upload CSV dataset      | Admin |
 | POST   | `/api/dataset/bulk`       | Bulk add samples        | Admin |
 | DELETE | `/api/dataset/{id}`       | Delete sample           | Admin |
+| DELETE | `/api/dataset/clear-all`  | Delete all samples      | Admin |
 
 ### Model Endpoints (Admin Only)
 
