@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Skeleton({ type = 'text', width = '100%', height = 14, style }) {
+export function Skeleton({ type = 'text', width = '100%', height = 14, style }) {
   return (
     <div
       className={`skeleton skeleton-${type}`}
@@ -43,3 +43,5 @@ export function TableSkeleton({ rows = 5 }) {
     </div>
   );
 }
+
+export default Skeleton;
