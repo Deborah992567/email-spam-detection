@@ -48,34 +48,27 @@ def _rotating_handler(filename: str, level: int = logging.INFO) -> logging.handl
 def setup_logging(log_to_console: bool = False, level: int = logging.INFO) -> None:
     """
     Configure application-wide logging to write into rotating log files.
-
-    Args:
-        log_to_console: Whether to also mirror logs to the terminal.
-        level: Base logging level.
+    Only touches the spamshield logger — leaves uvicorn's root handlers alone.
     """
-    root = logging.getLogger()
-    # Avoid duplicate handlers if setup is called more than once
-    root.handlers.clear()
+    app_logger = logging.getLogger("spamshield")
+    app_logger.setLevel(level)
+    # Remove existing rotating handlers to avoid duplicates on re-call
+    app_logger.handlers = [
+        h for h in app_logger.handlers
+        if not isinstance(h, logging.handlers.RotatingFileHandler)
+    ]
 
-    root.setLevel(level)
+    app_logger.addHandler(_rotating_handler("app.log", level))
+    app_logger.addHandler(_rotating_handler("error.log", logging.ERROR))
 
-    # Primary app log
-    root.addHandler(_rotating_handler("app.log", level))
-
-    # Error-only log
-    root.addHandler(_rotating_handler("error.log", logging.ERROR))
-
-    # Optional terminal mirror
-    if log_to_console:
+    if log_to_console and not any(isinstance(h, logging.StreamHandler) and not isinstance(h, logging.handlers.RotatingFileHandler) for h in app_logger.handlers):
         console = logging.StreamHandler()
         console.setLevel(level)
         console.setFormatter(logging.Formatter(FORMAT, datefmt=DATE_FORMAT))
-        root.addHandler(console)
+        app_logger.addHandler(console)
 
-    # Silence noisy third-party loggers unless an error occurs
     for noisy in ("uvicorn.access", "httpx", "urllib3", "sqlalchemy.engine"):
-        third_party = logging.getLogger(noisy)
-        third_party.setLevel(logging.WARNING)
+        logging.getLogger(noisy).setLevel(logging.WARNING)
 
 
 def get_ml_logger() -> logging.Logger:
@@ -120,3 +113,4 @@ def log_current_boot(log_to_console: bool = False) -> None:
     logging.getLogger("spamshield").info(
         "=== SpamShield backend started at %s ===", datetime.now().isoformat()
     )
+    logging.getLogger("spamshield").info("Listening on port %s", os.environ.get("PORT", "8000"))
