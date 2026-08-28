@@ -6,21 +6,21 @@ import joblib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Dict, Any
-from ml.utils.config import SAVED_MODELS_DIR, MODEL_REGISTRY_PATH
+from ml.utils import config
 from ml.utils.logging_setup import get_ml_logger
 
 logger = get_ml_logger("spamshield.ml.models")
 
 
 def _load_registry() -> list:
-    if MODEL_REGISTRY_PATH.exists():
-        with open(MODEL_REGISTRY_PATH, "r") as f:
+    if config.MODEL_REGISTRY_PATH.exists():
+        with open(config.MODEL_REGISTRY_PATH, "r") as f:
             return json.load(f)
     return []
 
 
 def _save_registry(registry: list):
-    with open(MODEL_REGISTRY_PATH, "w") as f:
+    with open(config.MODEL_REGISTRY_PATH, "w") as f:
         json.dump(registry, f, indent=2)
 
 
@@ -34,8 +34,8 @@ def save_model_version(
     registry = _load_registry()
     version_num = len(registry) + 1
     version_id = f"v{version_num}"
-    model_path = SAVED_MODELS_DIR / f"model_{version_id}.joblib"
-    vec_path = SAVED_MODELS_DIR / f"vectorizer_{version_id}.joblib"
+    model_path = config.SAVED_MODELS_DIR / f"model_{version_id}.joblib"
+    vec_path = config.SAVED_MODELS_DIR / f"vectorizer_{version_id}.joblib"
 
     joblib.dump(model, model_path)
     joblib.dump(vectorizer, vec_path)
@@ -57,7 +57,7 @@ def save_model_version(
     _save_registry(registry)
 
     # Update latest symlink reference
-    latest_path = SAVED_MODELS_DIR / "latest.json"
+    latest_path = config.SAVED_MODELS_DIR / "latest.json"
     with open(latest_path, "w") as f:
         json.dump(entry, f, indent=2)
 
@@ -67,7 +67,7 @@ def save_model_version(
 
 def get_latest_version() -> Optional[Dict[str, Any]]:
     """Get the latest model version info."""
-    latest_path = SAVED_MODELS_DIR / "latest.json"
+    latest_path = config.SAVED_MODELS_DIR / "latest.json"
     if latest_path.exists():
         with open(latest_path, "r") as f:
             return json.load(f)
