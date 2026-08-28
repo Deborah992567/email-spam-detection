@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-ML_DIR = BASE_DIR / "ml"
+ML_DIR = BASE_DIR
 MODELS_DIR = ML_DIR / "models"
 DATASETS_DIR = ML_DIR / "dataset"
 SAVED_MODELS_DIR = MODELS_DIR / "saved"
