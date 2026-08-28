@@ -1,7 +1,8 @@
 """
 Pydantic schemas for request/response validation.
 """
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+import json
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
@@ -55,6 +56,17 @@ class AnalysisResponse(BaseModel):
     indicators: Optional[List[Dict[str, str]]] = None
     model_version: Optional[str]
     created_at: datetime
+
+    @field_validator("indicators", mode="before")
+    @classmethod
+    def _parse_indicators(cls, v):
+        """Indicators are stored as a JSON string in the DB; normalize to a list."""
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except (json.JSONDecodeError, TypeError):
+                return None
+        return v
 
 
 class AnalysisListResponse(BaseModel):
