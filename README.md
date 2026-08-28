@@ -336,7 +336,7 @@ Create `backend/.env` from `backend/.env.example`:
 | `CORS_ORIGINS`                    | Allowed origins (JSON array)      | `["http://localhost:3000"]`          |
 | `DEBUG`                           | Enable debug mode                 | `true`                               |
 | `HOST`                            | Server host                       | `0.0.0.0`                           |
-| `PORT`                            | Server port                       | `8000`                               |
+| `PORT`                            | Server port                       | `8001`                               |
 
 ## Installation & Running
 
@@ -346,11 +346,10 @@ Create `backend/.env` from `backend/.env.example`:
 cd backend
 pip install -r requirements.txt
 python -m scripts.init_db --admin-email admin@spamdetect.com --admin-password admin123 --create-test-user
-python -m scripts.seed_data          # Optional: seed 40 sample training records
-uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8001
 ```
 
-API docs: http://localhost:8000/docs
+API docs: http://localhost:8001/docs
 
 ### Frontend
 
@@ -366,8 +365,8 @@ Frontend: http://localhost:3000
 
 Once the backend is running:
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+- **Swagger UI**: http://localhost:8001/docs
+- **ReDoc**: http://localhost:8001/redoc
 
 ### Authentication Endpoints
 
