@@ -5,6 +5,10 @@ from pydantic_settings import BaseSettings
 from typing import List
 import json
 import os
+from pathlib import Path
+
+# Resolve .env relative to backend/ dir, not CWD
+_BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 class Settings(BaseSettings):
@@ -40,7 +44,7 @@ class Settings(BaseSettings):
         )
 
     class Config:
-        env_file = ".env"
+        env_file = str(_BACKEND_DIR / ".env")
         env_file_encoding = "utf-8"
 
 
