@@ -43,6 +43,10 @@ ml/dataset/*.txt
 
 # Logs
 *.log
+logs/
+
+# Stray ML nested dirs (from path bug)
+ml/ml/
 
 # Coverage
 htmlcov/
